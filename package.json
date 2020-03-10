@@ -6,10 +6,10 @@
     "npm": "6.4.1"
   },
   "scripts": {
-    "client": "cd client && yarn start",
+    "client": "cd client && npm run start",
     "server": "nodemon server.js",
     "build": "cd client && npm run build",
-    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "dev": "concurrently --kill-others-on-fail \"nodemon --ignore 'client/*'\" \"npm run client\"",
     "start": "node server.js",
     "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build",
     "test-client": "cd client && yarn test"
@@ -21,6 +21,7 @@
     "dotenv": "7.0.0",
     "express": "^4.16.4",
     "express-sslify": "1.2.0",
+    "mongodb": "^3.5.4",
     "ramda": "^0.27.0"
   },
   "devDependencies": {
