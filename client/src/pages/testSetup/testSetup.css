@@ -1,0 +1,8 @@
+.selection {
+    height: 800px;
+    width: 80%;
+    background-color: rgba(230, 230, 230, 0.753);
+    position: absolute;
+    left: 10%;
+    top: calc(50% - 400px);
+}

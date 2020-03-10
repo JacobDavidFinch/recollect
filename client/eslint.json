@@ -1,0 +1,80 @@
+
+{
+    "extends": ["airbnb", "eslint:recommended", "prettier", "prettier/react", "plugin:react/recommended"],
+    "plugins": ["react", "fp", "prettier"],
+    "env": {
+        "browser": true,
+        "es6": true,
+        "jest": true
+    },
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true,
+            "modules": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "settings": {
+        "react": {
+            "pragma": "React",
+            "version": "detect"
+        }
+    },
+    "rules": {
+        "prettier/prettier": "warn",
+        "indent": [
+            "warn",
+            2
+        ],
+        // "quotes": [
+        //     "warn",
+        //     "single"
+        // ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "max-lines": [
+            "warn",
+            200
+        ],
+        // "max-lines-per-function": [
+        //     "warn",
+        //     35
+        // ],
+        "complexity": [
+            "warn",
+            5
+        ],
+        "max-nested-callbacks": [
+            "warn",
+            2
+        ],
+        "max-depth": [
+            "warn",
+            3
+        ],
+        "max-params": [
+            "warn", 2
+        ],
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "no-console": "off",
+        "no-param-reassign": "warn",
+        "no-mutating-assign": "warn",
+        "no-mutating-methods": "warn",
+        "no-mutation": "warn",
+        "fp/no-let": "warn",
+        "fp/no-this": "warn",
+        "fp/no-loops": "warn",
+        "fp/no-mutating-assign": "warn",
+        "fp/no-mutating-methods": "warn",
+        "fp/no-mutation": "warn",
+        "fp/no-delete": "warn",
+        "fp/no-throw": "warn",
+        "eslint(indent)": "off",
+        "import/prefer-default-export": "off"
+    }
+}
