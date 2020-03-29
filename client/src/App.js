@@ -11,7 +11,7 @@ import { GlobalStyle } from './global.styles';
 import {Container} from '@material-ui/core'
 
 import { selectCurrentUser } from './redux/user/user.selectors';
-import { checkUserSession } from './redux/user/user.actions';
+import { fetchUser } from './redux/user/user.actions';
 
 const HomePage = lazy(() => import('./pages/home/home.page.jsx'));
 const EditPage = lazy(() => import('./pages/edit/edit.page.jsx'));
@@ -19,8 +19,12 @@ const CreatePage = lazy(() => import('./pages/create/create.page.jsx'));
 const TestPage = lazy(() => import('./pages/test/test.page.jsx'));
 const TestSetupPage = lazy(() => import('./pages/testSetup/testSetup.page.jsx'));
 
-const App = ({ checkUserSession, currentUser }) => {
+const App = ({ fetchUser }) => {
 
+  useEffect(() => {
+    fetchUser('jdykstra')
+  }, [])
+  
   return (
     <Container maxWidth="xl">
       <GlobalStyle />
@@ -45,21 +49,10 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = dispatch => ({
-  checkUserSession: () => dispatch(checkUserSession())
+  fetchUser: fetchUser
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(App);
-
-{/* <Route exact path='/' component={HomePage} />
-<Route path='/shop' component={ShopPage} />
-<Route exact path='/checkout' component={CheckoutPage} />
-<Route
-  exact
-  path='/signin'
-  render={() =>
-    currentUser ? <Redirect to='/' /> : <SignInAndSignUpPage />
-  }
-/> */}

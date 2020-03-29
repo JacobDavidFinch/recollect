@@ -1,25 +1,32 @@
 import React, {useState} from 'react';
-import {  InputLabel, MenuItem, Select, FormControl, Paper, Grid, Button, Fab } from '@material-ui/core'
+import {  InputLabel, MenuItem, Select, FormControl, Paper, Grid, Button, Fab } from '@material-ui/core';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import AddIcon from '@material-ui/icons/Add';
+
+import { selectTags } from './redux/user/user.selectors';
+import { createTest } from './redux/user/user.actions';
 
 import { Dropdown } from '../../components';
 import './testSetup.css';
 
-const SelectContainer = ({possibleCategories}) => {
-  const [listSelected, setListSelected] = useState(null);
+const SelectContainer = ({tagsList = []}) => {
+  const [list, setList] = useState([]);
 
-  function handleClick() {
+  function getTest() {
     //TODO: Create API to fetch items specified
     console.log('sending out api for list');
   }
 
-  const list = ['React', 'JavaScript', 'Jest', 'TypeScript', 'Study Methods']
+  const editList = item => setList(list.indexOf(item) >= 0 ? [...list.slice(0, list.indexOf(item)), ...list.slice(list.indexOf(item) + 1)] : [...list, item]);
+
+  // const list = ['React', 'JavaScript', 'Jest', 'TypeScript', 'Study Methods']
 
   return (
     <Grid>
         <h3>Select topics that you would like to be in this study set</h3>
         <Dropdown
-            list={list}
+            list={tagsList}
             setListsSelected={setListSelected}
             listSelected={listSelected}
         />
@@ -29,6 +36,19 @@ const SelectContainer = ({possibleCategories}) => {
     </Grid>
   );
 };
+
+const mapStateToProps = createStructuredSelector({
+  tagsList: selectTags
+});
+
+const mapDispatchToProps = dispatch => ({
+  createTest: createTest
+});
+
+connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SelectContainer);
 
 export { SelectContainer };
 

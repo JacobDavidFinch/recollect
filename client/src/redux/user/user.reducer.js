@@ -2,33 +2,44 @@ import UserActionTypes from './user.types';
 
 const INITIAL_STATE = {
   currentUser: null,
-  error: null
+  userStatus: 'idle',
+  // userTests: [],
+  // userTestsStatus: 'idle',
+  // userTestHistory: [],
+  // userTestHistory: 'idle',
+  // userCards: [],
+  // userCardsStatus: 'idle',
 };
 
+
 const userReducer = (state = INITIAL_STATE, action) => {
+
+  const statusObjWithState = keyType => statusType => ({
+    ...state,
+    [`${keyType}Status`] : statusType
+  })
+  const userStatusObjWithState = statusObjWithState('user')
+  const testsStatusObjWithState = statusObjWithState('userTests');;
+  const testHistoryStatusObjWithState = statusObjWithState('userTestHistory');
+  const cardsStatusObjWithState = statusObjWithState('userCards');
+
   switch (action.type) {
-    case UserActionTypes.SIGN_IN_SUCCESS:
-      return {
-        ...state,
-        currentUser: action.payload,
-        error: null
-      };
-    case UserActionTypes.SIGN_OUT_SUCCESS:
-      return {
-        ...state,
-        currentUser: null,
-        error: null
-      };
-    case UserActionTypes.SIGN_IN_FAILURE:
-    case UserActionTypes.SIGN_OUT_FAILURE:
-    case UserActionTypes.SIGN_UP_FAILURE:
-      return {
-        ...state,
-        error: action.payload
-      };
-    default:
-      return state;
+    case UserActionTypes.USER_FETCH: return {...userStatusObjWithState('pending')};
+    case UserActionTypes.USER_SUCCESS: return {...userStatusObjWithState('resolved'), currentUser: action.payload };
+    case UserActionTypes.USER_FAIL: return {...userStatusObjWithState('rejected')};
+    // case UserActionTypes.USER_TESTS_FETCH: return {...testsStatusObjWithState('pending')};
+    // case UserActionTypes.USER_TESTS_SUCCESS: return {...testsStatusObjWithState('resolved'), userTests: action.payload };
+    // case UserActionTypes.USER_TESTS_FAIL: return {...testsStatusObjWithState('rejected')};
+    // case UserActionTypes.USER_TEST_HISTORY_FETCH: return {...testHistoryStatusObjWithState('pending')};
+    // case UserActionTypes.USER_TEST_HISTORY_SUCCESS: return {...testHistoryStatusObjWithState('resolved'), userTestHistory: action.payload };
+    // case UserActionTypes.USER_TEST_HISTORY_FAIL: return {...testHistoryStatusObjWithState('rejected')};
+    // case UserActionTypes.USER_CARDS_FETCH: return {...cardsStatusObjWithState('pending')};
+    // case UserActionTypes.USER_CARDS_SUCCESS: return {...cardsStatusObjWithState('resolved'), userCards: action.payload };
+    // case UserActionTypes.USER_CARDS_FAIL: return {...cardsStatusObjWithState('rejected')};
+    default: return state;
   }
 };
 
 export default userReducer;
+
+// user collection will have name, last login, previous tests, cards reference, 
