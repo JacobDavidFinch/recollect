@@ -1,66 +1,111 @@
 import { takeLatest, put, all, call } from 'redux-saga/effects';
+import * as R from 'ramda';
 
 import UserActionTypes from './user.types';
-import {updateCard, updateTest, fetchUser} from "../../utils/API"
+import { postCard, putCard, postTest, putTest, fetchUser } from "../../utils/API"
 import {
   userSuccess,
   userFail, 
-  userSuccess,
+  // userSuccess,
+  createCard,
   createCardSuccess,
   createCardFail,
+  updateCard,
   updateCardSuccess,
   updateCardFail,
+  deleteCard,
   deleteCardSuccess,
   deleteCardFail,
+  createTest,
   createTestSuccess,
   createTestFail,
+  updateTest,
   updateTestSuccess,
   updateTestFail,
+  deleteTest,
   deleteTestSuccess,
   deleteTestFail,
-  
 } from './user.actions';
 
-import {fetchResult, addTags} from 'user.sagas.helper.js'
-const fetchResultSaga = fetchResult(put);
+import { handleResult,  addTags} from './user.sagas.helper.js'
+import { createLogger } from 'redux-logger';
 
-export function* fetchUserSaga(user){
-  const completeUserObj = R.pipe(addTags, userSuccess);
-  fetchResultSaga(fetchUser, completeUserObj, userFail, user);
+export function* fetchUserSaga({ payload }){
+  const result = yield fetchUser(payload)
+  yield put(handleResult(addTags(result), userSuccess, userFail));
 }
 
-export function* createCardSaga(user, card){
-  fetchResultSaga(createCard, createCardSuccess, createCardFail, user, card);
+export function* createCardSaga({ payload: { user, card } }){
+  try {
+    const result = yield postCard(user, card)
+    yield put(handleResult(result, createCardSuccess, createCardFail));
+  } catch(err) {
+    createLogger(err)
+  }
 }
 
-export function* updateCardSaga(user, card){
-  fetchResultSaga(updateCard, updateCardSuccess, updateCardFail, user, card);
+export function* updateCardSaga({ payload: { user, card, index }}){
+  const result = yield putCard(user, card, index)
+  yield put(handleResult(result, updateCardSuccess, updateCardFail));
 }
 
-export function* deleteCardSaga(user, card){
-  fetchResultSaga(deleteCard, deleteCardSuccess, deleteCardFail, user, card);
+export function* deleteCardSaga(user, cards){
+  const result = yield deleteCard(user, cards)
+  yield put(handleResult(result, deleteCardSuccess, deleteCardFail));
 }
 
-export function* createTestSaga(user, test){
-  fetchResultSaga(createTest, createTestSuccess, createTestFail, user, test);
+export function* createTestSaga({ payload: { user, test }}){
+  console.log('hi');
+  const result = yield postTest(user, test)
+  yield put(handleResult(result, createCardSuccess, createCardFail));
 }
 
-export function* updateTestSaga(user, test){
-  fetchResultSaga(updateTest, updateTestSuccess, updateTestFail, user, test);
+export function* updateTestSaga({ payload: { user, test, index }}){
+  const result = yield putTest(user, test, index)
+  yield put(handleResult(result, updateCardSuccess, updateCardFail));
 }
 
-export function* deleteTestSaga(user, test){
-  fetchResultSaga(deleteTest, deleteTestSuccess, deleteTestFail, user, test);
+export function* deleteTestSaga({ payload: { user, tests }}){
+  const result = yield deleteTest(user, tests)
+  yield put(handleResult(result, deleteCardSuccess, deleteCardFail));
+}
+
+export function* fetchUserSagaWatcher() {
+  yield takeLatest(UserActionTypes.USER_FETCH, fetchUserSaga);
+}
+
+export function* createCardSagaWatcher(){
+  yield takeLatest(UserActionTypes.CREATE_CARD, createCardSaga);
+}
+
+export function* updateCardSagaWatcher(){
+  yield takeLatest(UserActionTypes.UPDATE_CARD, updateCardSaga);
+}
+
+export function* deleteCardSagaWatcher(){
+  yield takeLatest(UserActionTypes.DELETE_CARD, deleteCardSaga);
+}
+
+export function* createTestSagaWatcher(){
+  yield takeLatest(UserActionTypes.CREATE_TEST, createTestSaga);
+}
+
+export function* updateTestSagaWatcher(){
+  yield takeLatest(UserActionTypes.UPDATE_TEST, updateTestSaga);
+}
+
+export function* deleteTestSagaWatcher(){
+  yield takeLatest(UserActionTypes.DELETE_TEST, deleteTestSaga);
 }
 
 export function* userSagas() {
   yield all([
-    takeLatest(UserActionTypes.USER_FETCH, fetchUserSaga),
-    takeLatest(UserActionTypes.CARD_FETCH, createCardSaga),
-    takeLatest(UserActionTypes.CARD_UPDATE, updateCardSaga),
-    takeLatest(UserActionTypes.CARD_DELETE, deleteCardSaga),
-    takeLatest(UserActionTypes.TEST_FETCH, createTestSaga),
-    takeLatest(UserActionTypes.TEST_UPDATE, updateTestSaga),
-    takeLatest(UserActionTypes.TEST_DELETE, deleteTestSaga)
+    call(fetchUserSagaWatcher),
+    call(createCardSagaWatcher),
+    call(updateCardSagaWatcher),
+    call(deleteCardSagaWatcher),
+    call(createTestSagaWatcher),
+    call(updateTestSagaWatcher),
+    call(deleteTestSagaWatcher)
   ]);
 }

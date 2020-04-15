@@ -1,0 +1,20 @@
+.header {
+
+    width: 100%;
+    position:relative;
+
+    &__title {
+
+
+    }
+
+    &__login {
+        position: absolute !important;
+        right: 20px;
+    }
+
+    & a {
+        text-decoration: none;
+        color: white;
+    }
+}

@@ -2,6 +2,7 @@ import React, { useEffect, lazy, Suspense } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
+import { useGlobalState } from './Context/globalContext';
 
 import {Header} from './components/header/header.component.jsx';
 import {Spinner} from './components/spinner/spinner.component.jsx';
@@ -21,12 +22,15 @@ const TestSetupPage = lazy(() => import('./pages/testSetup/testSetup.page.jsx'))
 
 const App = ({ fetchUser }) => {
 
+  const {state, dispatch} = useGlobalState();
+  console.log([state, dispatch])
+
   useEffect(() => {
-    fetchUser('jdykstra')
+    fetchUser('jfinch')
   }, [])
   
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="xl" style={{padding: '0px'}}>
       <GlobalStyle />
       <Header />
       <Switch>
@@ -49,7 +53,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchUser: fetchUser
+  fetchUser: (user) => dispatch(fetchUser(user))
 });
 
 export default connect(

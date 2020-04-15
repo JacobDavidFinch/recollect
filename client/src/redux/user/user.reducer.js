@@ -3,12 +3,13 @@ import UserActionTypes from './user.types';
 const INITIAL_STATE = {
   currentUser: null,
   userStatus: 'idle',
-  // userTests: [],
+  tests: [],
+  tags: [],
+  cards: [],
+  // userCardsStatus: 'idle',
   // userTestsStatus: 'idle',
   // userTestHistory: [],
   // userTestHistory: 'idle',
-  // userCards: [],
-  // userCardsStatus: 'idle',
 };
 
 
@@ -25,9 +26,10 @@ const userReducer = (state = INITIAL_STATE, action) => {
 
   switch (action.type) {
     case UserActionTypes.USER_FETCH: return {...userStatusObjWithState('pending')};
-    case UserActionTypes.USER_SUCCESS: return {...userStatusObjWithState('resolved'), currentUser: action.payload };
+    case UserActionTypes.USER_SUCCESS: return {...userStatusObjWithState('resolved'), ...action.payload };
     case UserActionTypes.USER_FAIL: return {...userStatusObjWithState('rejected')};
-    // case UserActionTypes.USER_TESTS_FETCH: return {...testsStatusObjWithState('pending')};
+    case UserActionTypes.CREATE_CARD: return {...cardsStatusObjWithState('pending')};
+    case UserActionTypes.USER_TESTS_FETCH: return {...testsStatusObjWithState('pending')};
     // case UserActionTypes.USER_TESTS_SUCCESS: return {...testsStatusObjWithState('resolved'), userTests: action.payload };
     // case UserActionTypes.USER_TESTS_FAIL: return {...testsStatusObjWithState('rejected')};
     // case UserActionTypes.USER_TEST_HISTORY_FETCH: return {...testHistoryStatusObjWithState('pending')};

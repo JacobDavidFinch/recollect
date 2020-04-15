@@ -7,34 +7,28 @@ import {
   FormControl,
 } from '@material-ui/core';
 
-export const Dropdown = ({ setListSelected, listSelected, list }) => {
-  const handleChange = () => {
-    console.log('change');
-  };
-
+export const Dropdown = ({ setValue, value, list }) => {
+  const handleChange = (e) => setValue(e.target.value);
+ 
   return (
     <div className="dropdown-container">
      <FormControl>
-     <InputLabel id="demo-customized-select-label">Topic</InputLabel>
-      <Select
-        labelId="demo-customized-select-label"
-        id="demo-customized-select"
-        value={listSelected}
-        onChange={handleChange}
-        style={{width: '400px'}}
-      >
-        <RenderList list={list} />
-      </Select>
+        <InputLabel id="demo-customized-select-label">Topic</InputLabel>
+        <Select
+          labelId="demo-customized-select-label"
+          id="demo-customized-select"
+          value={value}
+          onChange={(e) => handleChange(e)}
+          style={{width: '400px'}}
+        >
+          {list.map((item, key) => (
+              <MenuItem value={item} key={createKey(item, key)}>{item}</MenuItem>
+            ))}
+        </Select>
      </FormControl>
     </div>
   );
 };
-
-function RenderList({list}) {
-  return list.map((item, key) => (
-    <MenuItem key={createKey(item, key)}>{item}</MenuItem>
-  ));
-}
 
 function createKey(item, key) {
   return `${item}-${key}`;
