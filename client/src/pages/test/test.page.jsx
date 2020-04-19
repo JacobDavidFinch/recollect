@@ -1,9 +1,14 @@
 import React, {useState} from 'react';
+import { useGlobalState } from '../../Context/globalContext';
 import {Container, Paper, TextField, Card} from '@material-ui/core';
 import * as R from 'ramda';
 
-const TestPage = ({cards, test}) => {
+const TestPage = ({cards}) => {
 
+    const {state, dispatch} = useGlobalState();
+    console.log([state, dispatch])
+
+    const {test} = state;
     const includedInTag = (test) => tags => {
         return R.difference(test, tags).length !== test.length;
     }

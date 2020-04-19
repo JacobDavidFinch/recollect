@@ -1,0 +1,12 @@
+/*
+Site needs to load
+Site needs to allow login
+Site needs to show user and offer logout
+Site handles logout
+User can see cards
+User can edit cards
+User can run tests
+User can see previous tests
+User can create new test
+User can create inputs and tags
+*/

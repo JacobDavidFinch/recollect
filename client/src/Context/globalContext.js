@@ -2,13 +2,21 @@ import React from 'react'
 const GlobalStateContext = React.createContext()
 
 function globalReducer(state, action) {
+  console.log([state, action])
   switch (action.type) {
-    case 'increment': {
-      return {count: state.count + 1}
-    }
-    case 'decrement': {
-      return {count: state.count - 1}
-    }
+    case 'tags': return {
+        ...state,
+        tags: action.payload
+      }
+    case 'test': return {
+        ...state,
+        test: action.payload
+      }
+    case 'edit': return {
+        ...state,
+        editCardIndex: action.payload,
+        editCardMode: action.payload !== undefined ? true : false
+      }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`)
     }
@@ -16,7 +24,12 @@ function globalReducer(state, action) {
 }
 
 const initialGlobalObj = {
-    okay: true
+    okay: true,
+    editCardIndex: undefined,
+    editCardMode: false,
+    userName: 'jfinch',
+    test: '',
+    tags: []
 }
 
 function GlobalProvider({children}) {

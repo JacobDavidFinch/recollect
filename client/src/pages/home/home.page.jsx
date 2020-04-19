@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
-import { connect, createStructuredSelector, selectAllUser  } from '../../redux/redux-imports';
+import { useGlobalState } from '../../Context/globalContext';
+import {EditModal} from '../../components/modal/modal.edit'
 import {Container, Paper, Grid, Card, Button} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import './home.page.scss';
@@ -35,12 +36,13 @@ const RecentListDisplay = ({status, list}) => {
     }
 
     const displayByStatus = ({status, fn, fnArg}) => {
-       return {
+       const display = {
         'idle': <div>Isn't loading</div>,
         'pending': <div>Pending</div>,
         'rejected': <div>Error loading</div>,
         'resolved': fn(fnArg)
-       }[status]
+       }[status];
+       return display ? display : (<div>loading</div>)
     }
 
     return displayByStatus({status, fn: isList, fnArg: list})
@@ -59,8 +61,11 @@ const LastTestDisplay = ({test}) => {
         </div>)
 }
 
-const HomePage = ({user = {}}) => {
+export const HomePage = ({user = {}}) => {
+    const {state, dispatch} = useGlobalState();
+    console.log(user);
     const { tests = [], userName, userStatus } = user;
+    const { tags, editCardMode, editCardIndex } = state;
     const classes = useStyles();
 
     return (
@@ -106,12 +111,8 @@ const HomePage = ({user = {}}) => {
 }
 
 
-const mapStateToProps = createStructuredSelector({
-    user: selectAllUser,
-  });
-  
-  export default connect(
-    mapStateToProps,
-    null
-  )(HomePage);
+// const mapStateToProps = createStructuredSelector({
+//     user: selectAllUser,
+//   });
 
+export default HomePage;

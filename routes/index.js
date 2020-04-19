@@ -30,7 +30,7 @@ MongoClient.connect(mongoConnectString, function(err, client) {
             const {userName} = req.params;
             console.log(userName);
             const document = await db.collection('user').findOne({userName});
-            console.log(document);
+            // console.log(document);
             res.json(document);
         });
         

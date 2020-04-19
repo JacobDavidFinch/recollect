@@ -1,19 +1,36 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, memo} from 'react';
 import { Paper, Grid, Fab, Button} from '@material-ui/core';
-import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
 import {Add, Remove} from '@material-ui/icons';
-
-import { selectTags, selectCurrentUser } from '../../redux/user/user.selectors';
-import { createTest } from '../../redux/user/user.actions';
-
+import {postTest} from '../../utils/API'
 import { Dropdown } from '../../components';
+import {equals} from 'ramda';
 import './testSetup.css';
 
-const SelectTests = ({tags = [], user: {userName}, createTest}) => {
+const SelectTests = ({tags = [], userName, tests = [], status}) => {
   console.log(tags);
   const [value, setValue] = useState('')
+  const [postStatus, setPostStatus] = useState('idle')
   const [list, setList] = useState([]);
+
+  useEffect(() => {
+    if(postStatus === 'rejected' || postStatus === 'resolved')setTimeout(() => {
+        setPostStatus('idle')
+    }, 3000);
+  }, [postStatus])
+
+  const BtnDisplay = ({postStatus, list, tests}) => {
+    const btn = (text, styleObj, props) => <Button {...props} color="primary" style={{marginTop: '15px', ...styleObj}} variant="contained" onClick={() => createTest(userName, list)}>{text}</Button>
+    const testExists = (list, tests) => tests.reduce((acc, test) => acc ? acc : equals(test, list), false) 
+    if(testExists(list, tests)){
+      return btn('Test Exists', {}, {disabled: true})
+    }
+    return ({
+    idle: btn("Create Test"),
+    pending:btn("Creating Test..."),
+    rejected: btn("Test Created!", {backgroundColor: 'green'}),
+    resolved: btn("Failed Creating Test", {backgroundColor: 'red'})
+  }[postStatus])
+}
 
   const addToList = (list, value) => setList([...list, value]);
   const removeFromList = (list, value) => {
@@ -23,64 +40,58 @@ const SelectTests = ({tags = [], user: {userName}, createTest}) => {
   }
   const isTagInList = (list, tag) => list.reduce((acc, curr) => {
     if(acc)return true;
-    debugger;
     return curr === tag;
   }, false) 
   console.log(value);
   console.log(isTagInList(tags, value));
   console.log(list);
 
-  function handleClick() {
-    //TODO: Create API to fetch items specified
-    console.log('sending out api for list');
+  const createTest = async(userName, list) => {
+    setPostStatus('pending');
+    const result = await postTest(userName, list);
+    return result === 'error' ? setPostStatus('rejected') : setPostStatus('resolved')
   }
 
   const tagType = isTagInList(list, value);
   const updateList = item => setList(list.indexOf(item) >= 0 ? [...list.slice(0, list.indexOf(item)), ...list.slice(list.indexOf(item) + 1)] : [...list, item]);
 
   return (
-    <Grid className="test-select">
-        <h3>Select topics that you would like to be in this study set</h3>
-        <div className="test-select__container">
-          <Dropdown
-              list={tags}
-              value={value}
-              setValue={setValue}
-              />
-          <Fab color="primary" onClick={() => tagType ? removeFromList(list, value) : addToList(list, value) } aria-label={tagType ? 'plus' : 'minus'}>
-            {tagType ? <Remove /> : <Add />}
-          </Fab>
-        </div>
-          <h4>Tags Featured In New Test:   </h4>
-           {
-            list && list.length ? list.map(item => <li key={item}>{item}</li>) : <li>No Tags Selected</li>
-          }
-          <Button color="primary" style={{marginTop: '15px'}} variant="contained" onClick={() => createTest(userName, list)}>Create Test</Button>
-       
-    </Grid>
+    <Paper>
+      <Grid className="test-select">
+          <h3>Select topics that you would like to be in this study set</h3>
+          <div className="test-select__container">
+            <Dropdown
+                list={tags}
+                value={value}
+                setValue={setValue}
+                />
+            <Fab color="primary" onClick={() => tagType ? removeFromList(list, value) : addToList(list, value) } aria-label={tagType ? 'plus' : 'minus'}>
+              {tagType ? <Remove /> : <Add />}
+            </Fab>
+          </div>
+            <h4>Tags Featured In New Test:   </h4>
+            {
+              list && list.length ? list.map(item => <li key={item}>{item}</li>) : <li>No Tags Selected</li>
+            }
+            <BtnDisplay postStatus={postStatus} list={list} tests={tests} />
+        
+      </Grid>
+    </Paper>
   );
 };
 
-const mapStateToProps = createStructuredSelector({
-  tags: selectTags,
-  user: selectCurrentUser
-});
+// const mapStateToProps = createStructuredSelector({
+//   tags: selectTags,
+//   user: selectCurrentUser
+// });
 
-const mapDispatchToProps = dispatch => ({
-  createTest: (userName, tags) => dispatch(createTest(userName, tags))
-});
+// const mapDispatchToProps = dispatch => ({
+//   createTest: (userName, tags) => dispatch(createTest(userName, tags))
+// });
 
-const SelectContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SelectTests);
+// const SelectContainer = connect(
+//   mapStateToProps,
+//   mapDispatchToProps
+// )(SelectTests);
 
-export { SelectContainer };
-
-const TestSetupPage = () => (
-    <Paper>
-         <SelectContainer/>
-    </Paper>
-);
-
-export default TestSetupPage;
+export default memo(SelectTests);

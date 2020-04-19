@@ -1,19 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import { ReactQueryDevtools } from 'react-query-devtools'
 import { GlobalProvider } from './Context/globalContext';
 import { PersistGate } from 'redux-persist/integration/react';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import { store } from './redux/store';
 import * as serviceWorker from './serviceWorker';
 
 import './index.css';
 import App from './App';
-
-console.log(store)
-console.log(store.getState())
 
 const theme = createMuiTheme({
   palette: {
@@ -29,8 +25,8 @@ const theme = createMuiTheme({
 });
 
 ReactDOM.render(
-  <Provider store={store}>
-    <BrowserRouter>
+  <BrowserRouter>
+  <ReactQueryDevtools initialIsOpen={false} />
       {/* <PersistGate persistor={persistor}> */}
         <ThemeProvider theme={theme}>
           <GlobalProvider>
@@ -38,8 +34,7 @@ ReactDOM.render(
           </GlobalProvider>
         </ThemeProvider>
       {/* </PersistGate> */}
-    </BrowserRouter>
-  </Provider>,
+    </BrowserRouter>,
   document.getElementById('root')
 );
 

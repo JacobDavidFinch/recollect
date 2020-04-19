@@ -1,5 +1,6 @@
 import saferr from "saferr";
 import axios from "axios";
+import {refetchUser} from "../reactQuery";
 
 const safeGet = saferr(axios.get);
 const safePost = saferr(axios.post);
@@ -14,6 +15,10 @@ const handleErr = (err) => {
 const handleResult = (result) => {
     console.log(result.data);
     return result.data;
+}
+const handleAsyncResult = async result => {
+    await refetchUser();
+    handleResult(result);
 }
 
 const url = (path) => `/api/${path}`;
@@ -67,7 +72,7 @@ export const postTest = async (userName, test) => {
     console.log(userName);
     console.log(test);
     const [err, result] = await safePost(url(`test/${userName}`), {test});
-    return err ? handleErr(err) : handleResult(result)
+    return err ? handleErr(err) : await handleAsyncResult(result)
 }
 
 export const putTest = async (userName, test, index) => {
@@ -79,40 +84,3 @@ export const deleteTest = async (userName, tests) => {
     const [err, result] = await safeDelete(url(`test/${userName}`), {tests});
     return err ? handleErr(err) : handleResult(result)
 }
-
-
-
-
-
-// const getAllLinksByTag = async (tagsArr) => {
-//     const [err, result] = await safeGet(url('linksByTags'));
-//     return err ? handleErr(err) : handleResult(result)
-// }
-
-// const createLink = async (link) => {
-//     const [err, result] = await safePost(url('link'));
-//     return err ? handleErr(err) : handleResult(result)
-// }
-
-// const updateLink = async (id) => {
-//     const [err, result] = await safePut(url('link'));
-//     return err ? handleErr(err) : handleResult(result)
-// }
-
-// const deleteLink = async (id) => {
-//     const [err, result] = await safeDelete(url('link'));
-//     return err ? handleErr(err) : handleResult(result)
-// }
-
-// const updateLinkStats = async () => {
-//     const [err, result] = await safeGet(url('allTags'));
-//     return err ? handleErr(err) : handleResult(result)
-// }
-
-// const recentTests = async () => {
-
-// }
-
-// const recentLinks = async () => {
-
-// }
