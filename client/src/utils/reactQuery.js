@@ -33,7 +33,6 @@ const prefetchUser = async (userName, tags, cb) => {
       if(result.cards && result.cards.length && !tags.length){
         cb(result.cards);
       }
-
     })
 }
 

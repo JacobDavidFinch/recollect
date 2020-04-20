@@ -37,7 +37,7 @@ const EditPage = () => {
     const {state, dispatch} = useGlobalState();
     const classes = useStyles();
     const { tags, editCardMode, editCardIndex, userName } = state;
-    const { status, data = {}, error, isFetching } = useQuery("cards", () => getCards(userName), {stateTime: 120000});
+    const { status, data = {}, error, isFetching } = useQuery("cards", () => getCards(userName), {staleTime: 120000});
     console.log(status);
     console.log(data);
     const cards = data || [];

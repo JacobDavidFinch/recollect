@@ -106,7 +106,7 @@ const CreatePage = () => {
     const {state, dispatch} = useGlobalState();
     const { editCardMode, editCardIndex, tags, userName } = state;
     
-    const { status, data = {}, error, isFetching } = useQuery("user", () => getUser(userName), {stateTime: 120000});
+    const { status, data = {}, error, isFetching } = useQuery("user", () => getUser(userName), {staleTime: 120000});
     
     const [apiStatus, setApiStatus] = useState('idle');
     const [tagsValue, setTagsValue] = useState([])
