@@ -1,7 +1,7 @@
 import React, { useEffect, lazy, Suspense } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useGlobalState } from './Context/globalContext';
-import {getUser, useQuery} from './utils/reactQuery'
+import {getUser, useQuery, prefetchUser} from './utils/reactQuery'
 import {Header} from './components/header/header.component.jsx';
 import {EditModal} from './components/modal/modal.edit'
 import {Spinner} from './components/spinner/spinner.component.jsx';
@@ -20,17 +20,16 @@ const TestSetupPage = lazy(() => import('./pages/testSetup/testSetup.page.jsx'))
 const App = ({ fetchUser }) => {
 
   const {state, dispatch} = useGlobalState();
+  const { editCardMode, editCardIndex, userName } = state;
   console.log([state, dispatch])
   console.log(state.tags)
-  const { status, data = {}, error, isFetching } = useQuery(["user", state.userName], getUser, {stateTime: 120000});
-  console.log([status, data, error, isFetching]);
-  const { tests = [], userName = "", userStatus = "", cards = [] } = data;
-  const { editCardMode, editCardIndex } = state;
 
-  if(cards.length && !state.tags.length){
-    dispatch({type: "tags", payload: tags(cards)});
-  }
-  
+  // const { status, data = {}, error, isFetching } = useQuery("user", () => getUser(userName), {stateTime: 120000});
+  // console.log([status, data, error, isFetching]);
+  // const { tests = [], userStatus = "", cards = [] } = data;
+
+  prefetchUser(userName, state.tags, (cards) =>  dispatch({type: "tags", payload: tags(cards)}))
+ 
   return (
     <Container maxWidth="xl" style={{padding: '0px'}}>  
       <GlobalStyle />
@@ -38,25 +37,18 @@ const App = ({ fetchUser }) => {
       <Switch>
         <ErrorBoundary>
           <Suspense fallback={<Spinner />}>
-            <Route exact path='/' component={() => <HomePage user={data} status={status} />} />
-            <Route exact path='/edit' component={() => <EditPage cards={cards} status={status}/>} />
-            <Route exact path='/create' component={() => <CreatePage userName={userName} status={status} />} />
+            <Route exact path='/' component={() => <HomePage />} />
+            <Route exact path='/edit' component={() => <EditPage />} />
+            <Route exact path='/create' component={() => <CreatePage />} />
             <Route exact path='/test' component={() => <TestPage />} />
-            <Route exact path='/testSetup' component={() => <TestSetupPage userName={userName} tests={tests} tags={state.tags} status={status}/>} />
+            <Route exact path='/testSetup' component={() => <TestSetupPage />} />
           </Suspense>
         </ErrorBoundary>
       </Switch>
-      <EditModal user={data} tags={state.tags} dispatch={dispatch} editCardMode={editCardMode} editCardIndex={editCardIndex}/>
+      <EditModal />
+      {/* <EditModal user={data} tags={state.tags} dispatch={dispatch} editCardMode={editCardMode} editCardIndex={editCardIndex}/> */}
     </Container>
   );
 };
-
-// const mapStateToProps = createStructuredSelector({
-//   currentUser: selectCurrentUser
-// });
-
-// const mapDispatchToProps = dispatch => ({
-//   fetchUser: (user) => dispatch(fetchUser(user))
-// });
 
 export default App;

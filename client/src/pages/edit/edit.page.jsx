@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, memo} from 'react';
 import cuid from 'cuid';
+import {getCards, useQuery} from '../../utils/reactQuery'
 import { makeStyles } from '@material-ui/core/styles';
 import { useGlobalState } from '../../Context/globalContext';
 import CreatePage from "../create/create.page.jsx"
@@ -32,11 +33,14 @@ const useStyles = makeStyles({
     },
   });
 
-const EditPage = ({ cards, editCard }) => {
+const EditPage = () => {
     const {state, dispatch} = useGlobalState();
     const classes = useStyles();
-    const { tags, editCardMode, editCardIndex } = state;
-
+    const { tags, editCardMode, editCardIndex, userName } = state;
+    const { status, data = {}, error, isFetching } = useQuery("cards", () => getCards(userName), {stateTime: 120000});
+    console.log(status);
+    console.log(data);
+    const cards = data || [];
     // have search input 
     // cards description with edit and scroll
 
@@ -47,7 +51,7 @@ const EditPage = ({ cards, editCard }) => {
     }
 
     if(editCardIndex){
-        return (<CreatePage card={cards[editCardIndex]} isEditCard={{index: editCardIndex, editCard, card:cards[editCardIndex]}} />)
+        return (<CreatePage />)
     }
     return (
     <Paper className={classes.container}>
@@ -82,4 +86,4 @@ const EditPage = ({ cards, editCard }) => {
 //     editCard: (user, values, index) => dispatch(updateCard(user, values, index))
 //   });
   
-  export default EditPage;
+  export default memo(EditPage);

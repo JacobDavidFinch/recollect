@@ -1,11 +1,10 @@
 import React, {useState, memo} from 'react';
-import {Container, Paper, Grid, TextField, Button } from '@material-ui/core';
+import {Container, Paper, Grid, TextField, Button, Checkbox } from '@material-ui/core';
+import {getUser, useQuery} from '../../utils/reactQuery'
 import { useGlobalState } from '../../Context/globalContext'
 import {postCard, putCard} from '../../utils/API'
 import { makeStyles } from '@material-ui/core/styles';
 import { useForm, Controller } from "react-hook-form";
-import Checkbox from '@material-ui/core/Checkbox';
-import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
@@ -15,127 +14,126 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const useStyles = makeStyles(theme => ({
+        paper : {
+            padding: 10
+        },
         container: {
             margin: theme.spacing(1),
-            width: '100%'
+            width: '99%',
+            height: '99%'
         },
   }));
 
-const InputComponent = ({name, label, control, xs = 12, sm = 6, xl = 4, lg = 6, ...props}) => {
+const InputComponent = ({name, label, register, xs = 12, sm = 6, xl = 4, lg = 6, ...props}) => {
  
     return (
         <Grid item xs={xs} sm={sm} lg={lg} xl={xl}>
-            <Controller as={TextField} {...props} fullWidth variant="outlined" label={label} name={name} control={control} defaultValue="" />
+            <TextField {...props} inputRef={register} fullWidth variant="outlined" label={label} name={name} defaultValue="" />
         </Grid>
     )
 }
 
-const AutoCompleteComponent = ({name, label, control, xs = 12, sm = 6, xl = 4, lg = 6, ...props}) => {
- 
-    return (
-        <Grid item xs={xs} sm={sm} lg={lg} xl={xl}>
-            <Controller as={Autocomplete} {...props}  multiple
-                id="checkboxes-tags-demo"
-                options={top100Films}
-                disableCloseOnSelect
-                getOptionLabel={(option) => option.title}
-                renderOption={(option, { selected }) => (
-                    <React.Fragment>
-                    <Checkbox
-                        icon={icon}
-                        checkedIcon={checkedIcon}
-                        style={{ marginRight: 8 }}
-                        checked={selected}
-                    />
-                    {option.title}
-                    </React.Fragment>
-                )}
-                style={{ width: 500 }}
-                renderInput={(params) => (
-                    <TextField {...params} variant="outlined" label="Checkboxes" placeholder="Favorites" />
-                )} />
-        </Grid>
-    )
-}
+const recomendedInputs = [
+    "Summary", "What It Connects To", "Big Idea", "What I Need It For", "Simple Explanation", "When I Would Use", "Further Questions", "Example", "How To Recall", "It's Like", "Web Links"
+]
 
-const AddInputs = ({control}) => {
+const AddInputs = ({name, label, register, xs = 12, sm = 6, xl = 4, lg = 6, ...props}) => {
     const [inputIterator, setInputIterator] = useState([]);
     const [value, setValue] = useState('');
+    console.log([value, inputIterator]);
 
     const createInput = () => {
         setInputIterator([...inputIterator, value]);
         setValue('');
     }
 
-    const inputMap = () => inputIterator.map((input, i) => <InputComponent control={control} label={input} md={4} xs={4} lg={4} xl={4} name={"input" + i} />);
+    const inputMap = () => inputIterator.map((input, i) => (  <InputComponent register={register} name={input} key={input + i} label={input} xs={12} lg={6} />));
 
     return (
         <>
             {inputMap()}
             <Grid item  xs={12} sm={6} xl={4} lg={6}>
-                <TextField fullWidth variant="outlined" value={value} onChange={(e) => setValue(e.target.value)} label={"Input Key"} defaultValue="Input" />
+                <Autocomplete {...props}
+                    id="free-solo-demo"
+                    onChange={(e) => setValue(e.target.textContent)}
+                    // onInputChange={(e) => setValue(e.target.value)}
+                    freeSolo
+                    options={recomendedInputs.map((input) => input)}
+                    renderInput={(params) => (
+                    <TextField {...params} fullWidth variant="outlined" value={value} onChange={(e) => setValue(e.target.value)} label={"Input Key"} />
+                    )}
+                  />
             </Grid>
-            <Button variant="contained" color="primary" onClick={createInput}>Create Input</Button>
+            <Button variant="contained" color="secondary" onClick={createInput}>Create Input</Button>
         </>
     )
 }
 
-const AddTags = ({control}) => {
-    const [tagIterator, setTagIterator] = useState(0);
 
-    const tagsMap = () => {
-        const tagInput = [];
-        for(let i = 0; i <= tagIterator; i++){
-            tagInput.push(<InputComponent control={control} label={"Tag"} name={"tag" + i} />);
-        }
-        return tagInput;
-    }
 
+const AddTags = ({ setTagsValue, tags = []}) => {
     return (
-        <>
-            {tagsMap()}
-            <Button variant="contained" color="primary" onClick={() => setTagIterator(tagIterator + 1)}>Add Tag</Button>
-        </>
+            <Grid item item  xs={12}>
+                <Autocomplete name="Tags" multiple
+                    id="checkboxes-tags-demo"
+                    options={tags}
+                    name="Tags"
+                    onChange={(e, value) => setTagsValue(value)}
+                    freeSolo
+                    disableCloseOnSelect
+                    getOptionLabel={(tags) => tags}
+                    renderOption={(tags, { selected }) => (
+                        <>
+                        <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                        />
+                        {tags}
+                        </>
+                    )}
+                    
+                    renderInput={(params) => (
+                        <TextField {...params} variant="outlined" label="Tags" placeholder="Favorites" />
+                    )} />
+            </Grid>
     )
 }
 
-const CreatePage = ({tags, tests, userName, status, card, editCardIndex}) => {
-    const [apiStatus, setApiStatus] = useState('idle');
+const CreatePage = () => {
+    
     const {state, dispatch} = useGlobalState();
+    const { editCardMode, editCardIndex, tags, userName } = state;
+    
+    const { status, data = {}, error, isFetching } = useQuery("user", () => getUser(userName), {stateTime: 120000});
+    
+    const [apiStatus, setApiStatus] = useState('idle');
+    const [tagsValue, setTagsValue] = useState([])
+    const classes = useStyles();
 
+    const card = data.cards ? data.cards[editCardIndex] : undefined;
     const apiCall = async ({api, args}) => await api(...args) === "error" ? setApiStatus('rejected') : setApiStatus('resolved');
 
     const { handleSubmit, control, register, errors } = useForm();
 
     const onSubmit = async values => {
-        console.log(values)
+        const submitVals = {...values, Tags: tagsValue}
+        console.log(submitVals)
         setApiStatus('pending');
-        return await apiCall( card ? {api: putCard , args: [userName, values, state.editCardIndex]} : {api: postCard, args: [userName, values]} );
+        // return await apiCall( card ? {api: putCard , args: [userName, submitVals, state.editCardIndex]} : {api: postCard, args: [userName, submitVals]} );
     }
-    const classes = useStyles();
 
     return (
-        <Paper>
+        <Paper className={classes.paper}>
                 <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
                     <Grid container spacing={3} alignItems="center" className={classes.container}>
-                        <InputComponent control={control} label={"Name"} xl={4} sm={4} name="name"/>
-                        <InputComponent control={control} rows="4" label={"Summary"} md={12} lg={12} xl={12} sm={12} multiline name="Summary" />
-                        <InputComponent control={control} label={"What It Connects To"} rows="4"  xl={6} sm={12} multiline name="What It Connects To" />
-                        <InputComponent control={control} label={"Big Idea"} rows="4" xl={6} sm={12} lg={6} multiline name="Big Idea" />
-                        <InputComponent control={control} rows="4" label={"What I Need It For"} xl={6} sm={12} multiline name="What I Need It For" />
-                        <InputComponent control={control} rows="4" label={"Simple Explanation"} xl={6} sm={12} multiline name="Simple Explanation" />
-                        <InputComponent control={control} rows="4" label={"What I Would Use"} xl={6} sm={12} multiline name="When I Would Use" />
-                        <InputComponent control={control} rows="4" label={"Further Questions"} xl={6} sm={12} multiline name="Further Questions" />
-                        <InputComponent control={control} rows="4" label={"Example"} xl={6} sm={12} multiline name="Example" />
-                        <InputComponent control={control} rows="4" label={"How To Recall"} xl={6} sm={12} multiline name="How To Recall" />
-                        <InputComponent control={control} rows="4" label={"It's Like"} xl={6} sm={12} multiline name="It's Like" />
-                        <InputComponent control={control} rows="4" label={"Web Links"} xl={6} sm={12} multiline name="Web Links" />
+                        <InputComponent register={register} label={"Name"} xl={4} sm={4} name="Name"/>
+                        <AddTags setTagsValue={setTagsValue} tags={tags} />
+                        <InputComponent register={register} rows="4" label={"Summary"} md={12} lg={12} xl={12} sm={12} multiline name="Summary" />
                     </Grid>
                     <Grid container spacing={3} alignItems="center" className={classes.container}>
-                        <AddInputs control={control}/>
-                    </Grid>
-                    <Grid container spacing={3} alignItems="center" className={classes.container}>
-                        <AddTags control={control}/>
+                        <AddInputs register={register}/>
                     </Grid>
                     <Grid container spacing={3} direction="row" justify="flex-end" className={classes.container}>
                         <Button variant="contained" color="primary" type="submit">Submit</Button>

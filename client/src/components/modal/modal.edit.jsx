@@ -18,7 +18,7 @@ export const EditModal = ({editCardMode, dispatch, user={}, tags, editCardIndex 
       >
         <DialogTitle id="alert-dialog-title">Edit Card</DialogTitle>
         <DialogContent>
-            <CreatePage {...user} tags={tags} editCardMode={editCardMode} editCardIndex={editCardIndex} card={editCardIndex !== undefined ? cards[editCardIndex] : undefined}/>
+            <CreatePage/>
         </DialogContent>
       </Dialog>
     )

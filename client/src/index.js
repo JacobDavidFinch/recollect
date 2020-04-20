@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { ReactQueryDevtools } from 'react-query-devtools'
 import { GlobalProvider } from './Context/globalContext';
-import { PersistGate } from 'redux-persist/integration/react';
+// import { PersistGate } from 'redux-persist/integration/react';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import * as serviceWorker from './serviceWorker';
@@ -19,7 +19,7 @@ const theme = createMuiTheme({
     },
     secondary: {
       // This is green.A700 as hex.
-      main: '#09814A',
+      main: '#472d3b',
     },
   },
 });
