@@ -45,8 +45,7 @@ const App = ({ fetchUser }) => {
           </Suspense>
         </ErrorBoundary>
       </Switch>
-      <EditModal />
-      {/* <EditModal user={data} tags={state.tags} dispatch={dispatch} editCardMode={editCardMode} editCardIndex={editCardIndex}/> */}
+      <EditModal dispatch={dispatch} tags={state.tags} editCardMode={editCardMode} editCardIndex={editCardIndex}/>
     </Container>
   );
 };

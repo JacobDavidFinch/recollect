@@ -48,11 +48,19 @@ MongoClient.connect(mongoConnectString, function(err, client) {
     
         // CARD
         
+        router.get('/:userName/cards', async (req, res) => {
+            const {userName} = req.params;
+            console.log(userName);
+            const document = await db.collection('user').findOne({userName});
+            // console.log(document);
+            res.json(document.cards);
+        });
+        
         router.post('/card/:userName', async (req, res) => {
             const {userName} = req.params;
             const {card} = req.body;
             console.log(card);
-            const document = await db.collection('user').updateOne({userName}, {$addToSet: {cards: objectWtTags(card)}});
+            const document = await db.collection('user').updateOne({userName}, {$addToSet: {cards: card}});
             res.json(document)
         })
         

@@ -1,10 +1,12 @@
 import React from 'react';
+import {getCards, useQuery} from '../../utils/reactQuery'
 import CreatePage from '../../pages/create/create.page';
 import {Dialog, DialogContent, DialogTitle} from '@material-ui/core';
 
 
-export const EditModal = ({editCardMode, dispatch, user={}, tags, editCardIndex }) => {
-    const {tests, userName, status, cards= []} = user;
+export const EditModal = ({editCardMode, dispatch, tags, editCardIndex }) => {
+  const { status, data: user = {}, error, isFetching } = useQuery("cards", () => getCards(userName), {staleTime: 120000});
+    const {tests, userName, cards = []} = user;
     const handleClose = () => {
         dispatch({type: "edit", payload: undefined})
     }

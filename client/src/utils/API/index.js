@@ -54,6 +54,12 @@ export const postCard = async ( userName, card ) => {
     return err ? handleErr(err) : handleResult(result);
 }
 
+export const putCardStats = async ( userName, card, correct ) => {
+    console.log(card);
+    const [err, result] = await safePost(url(`card/answer/${userName}`), {card, correct});
+    return err ? handleErr(err) : handleResult(result);
+}
+
 export const putCard = async ( userName, card, index ) => {
     const [err, result] = await safePut(url(`card/${userName}`), {index, card});
     return err ? handleErr(err) : handleResult(result);

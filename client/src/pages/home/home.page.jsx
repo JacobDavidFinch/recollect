@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
+import {getUser, useQuery} from '../../utils/reactQuery'
 import { useGlobalState } from '../../Context/globalContext';
 import {EditModal} from '../../components/modal/modal.edit'
 import {Container, Paper, Grid, Card, Button} from '@material-ui/core'
@@ -61,11 +62,11 @@ const LastTestDisplay = ({test}) => {
         </div>)
 }
 
-export const HomePage = ({user = {}}) => {
+export const HomePage = () => {
     const {state, dispatch} = useGlobalState();
-    console.log(user);
-    const { tests = [], userName, userStatus } = user;
-    const { tags, editCardMode, editCardIndex } = state;
+    const { tags, userName, editCardMode, editCardIndex } = state;
+    const { status, data: user = {}, error, isFetching } = useQuery("user", () => getUser(userName), {staleTime: 120000});
+    const {tests = []} = user;
     const classes = useStyles();
 
     return (
