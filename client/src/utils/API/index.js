@@ -17,7 +17,7 @@ const handleResult = (result) => {
     return result.data;
 }
 const handleAsyncResult = async result => {
-    await refetchUser();
+    await refetchUser()
     handleResult(result);
 }
 

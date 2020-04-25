@@ -1,6 +1,15 @@
 import React from 'react'
 const GlobalStateContext = React.createContext()
 
+const initialGlobalObj = {
+  okay: true,
+  editCardIndex: undefined,
+  editCardMode: false,
+  userName: '',
+  test: '',
+  tags: []
+}
+
 function globalReducer(state, action) {
   console.log([state, action])
   switch (action.type) {
@@ -17,19 +26,17 @@ function globalReducer(state, action) {
         editCardIndex: action.payload,
         editCardMode: action.payload !== undefined ? true : false
       }
+    case 'login': return {
+      ...state,
+      ...action.payload
+    }
+    case 'clearGlobalStore': return {
+      initialGlobalObj
+    }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`)
     }
   }
-}
-
-const initialGlobalObj = {
-    okay: true,
-    editCardIndex: undefined,
-    editCardMode: false,
-    userName: 'jfinch',
-    test: '',
-    tags: []
 }
 
 function GlobalProvider({children}) {

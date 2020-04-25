@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useQuery } from "react-query";
 import { queryCache } from 'react-query'
+import {postUser} from './API'
 
 const url = (path, extPath = "") => `/api/${path}${extPath}`;
 
 const getUser = async (userName) => {
+  console.log(userName);
     const lowerCaseUserName = userName.toLowerCase();
     const { data } = await axios.get(
       url(lowerCaseUserName)
@@ -13,7 +15,10 @@ const getUser = async (userName) => {
 };
 
 const getCards = async (userName) => {
-    const lowerCaseUserName = userName.toLowerCase();
+  console.log(userName);
+  const lowerCaseUserName = userName.toLowerCase();
+  console.log(lowerCaseUserName);
+  console.log(url(lowerCaseUserName, "/cards"));
     const { data } = await axios.get(
       url(lowerCaseUserName, "/cards")
     );
@@ -27,10 +32,14 @@ const getCards = async (userName) => {
 const refetchUser = () => queryCache.refetchQueries("user");
 
 const prefetchUser = async (userName, tags, cb) => {
+  console.log(userName);
   const queryData = await queryCache.prefetchQuery('user', () =>
     getUser(userName)).then(result => {
       console.log(result);
-      if(result.cards && result.cards.length && !tags.length){
+      if(result === null){
+        postUser(userName);
+      }
+      if(result && result.cards && result.cards.length && !tags.length){
         cb(result.cards);
       }
     })

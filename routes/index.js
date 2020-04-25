@@ -13,7 +13,7 @@ MongoClient.connect(mongoConnectString, function(err, client) {
       let db = client.db('studyGuide')
 
       //USER
-      const userObj = ({userName, cards, tests}) => ({
+      const userObj = ({userName, cards = [], tests = []}) => ({
           userName,
           cards,
           tests
@@ -36,7 +36,7 @@ MongoClient.connect(mongoConnectString, function(err, client) {
         
         router.post('/:userName', async (req, res) => {
             const {userName} = req.params;
-            const document = await db.collection('user').insertOne(userObj(userName));
+            const document = await db.collection('user').insertOne(userObj({userName}));
             res.json(document);
         });
         

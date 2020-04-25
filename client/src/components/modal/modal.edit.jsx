@@ -4,9 +4,9 @@ import CreatePage from '../../pages/create/create.page';
 import {Dialog, DialogContent, DialogTitle} from '@material-ui/core';
 
 
-export const EditModal = ({editCardMode, dispatch, tags, editCardIndex }) => {
+export const EditModal = ({editCardMode, dispatch, tags, editCardIndex, userName }) => {
   const { status, data: user = {}, error, isFetching } = useQuery("cards", () => getCards(userName), {staleTime: 120000});
-    const {tests, userName, cards = []} = user;
+    const {tests, cards = []} = user;
     const handleClose = () => {
         dispatch({type: "edit", payload: undefined})
     }

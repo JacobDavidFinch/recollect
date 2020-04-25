@@ -1,28 +1,35 @@
 import React, {useState, useReducer, useEffect, useMemo} from 'react';
 import { useGlobalState } from '../../Context/globalContext';
+import {getCards, useQuery} from '../../utils/reactQuery';
 import {Container, Paper, TextField, Card, Button} from '@material-ui/core';
 import {putCardStats} from '../../utils/API'
 import * as R from 'ramda';
 
-const TestPage = ({cards}) => {
+const includedInTag = test => tags => {
+    return R.difference(test, tags).length !== test.length;
+}
+const getTestCards = (cards = [], fn) => cards.reduce((acc, curr) => fn(curr.tags) ? {...acc, ...curr} : {...acc}, {})
+
+const TestPage = ({}) => {
     const [count, setCount] = useState(0);
     
     const {state, dispatch} = useGlobalState();
     console.log([state, dispatch])
+    const {test, userName} = state;
     
-    const {test} = state;
-    const includedInTag = (test) => tags => {
-        return R.difference(test, tags).length !== test.length;
-    }
+    console.log(userName);
+    const { status, data: cards = [], error, isFetching } = useQuery("cards", () => getCards(userName), {staleTime: 120000});
+    console.log([cards, userName]);
+
     const testNameIncludedInTag = includedInTag(test);
-    const getCards = (cards) => cards.reduce((acc, curr) => testNameIncludedInTag(curr.tags) ? {...acc, ...curr} : {...acc}, {})
-    const cardList = useMemo(() => getCards(cards), [cards]);
-    
+    const cardList = useMemo(() => getTestCards(cards, testNameIncludedInTag), [cards]);
     // cardGuess
     // compareCards
     // comments, send whether correct, diff check, pull next card  
     
     return (
+        !cards ? (<div>Loading...</div>)
+         : (
         <div>
             <CardGuess card={cardList[count]} count={count} setCount={setCount} />
             <div>
@@ -30,6 +37,7 @@ const TestPage = ({cards}) => {
                 <Button disable={count === 0} onClick={() => setCount(count - 1)}>Previus</Button>
             </div>
         </div>
+        )
     )
 }
 

@@ -15,37 +15,39 @@ const HomePage = lazy(() => import('./pages/home/home.page.jsx'));
 const EditPage = lazy(() => import('./pages/edit/edit.page.jsx'));
 const CreatePage = lazy(() => import('./pages/create/create.page.jsx'));
 const TestPage = lazy(() => import('./pages/test/test.page.jsx'));
+const LoginPage = lazy(() => import('./pages/login/login.page.jsx'));
 const TestSetupPage = lazy(() => import('./pages/testSetup/testSetup.page.jsx'));
 
-const App = ({ fetchUser }) => {
+const App = () => {
 
   const {state, dispatch} = useGlobalState();
   const { editCardMode, editCardIndex, userName } = state;
   console.log([state, dispatch])
   console.log(state.tags)
 
-  // const { status, data = {}, error, isFetching } = useQuery("user", () => getUser(userName), {stateTime: 120000});
-  // console.log([status, data, error, isFetching]);
-  // const { tests = [], userStatus = "", cards = [] } = data;
-
-  prefetchUser(userName, state.tags, (cards) =>  dispatch({type: "tags", payload: tags(cards)}))
- 
+  if(userName){
+    console.log(userName);
+    prefetchUser(userName, state.tags, (cards) =>  dispatch({type: "tags", payload: tags(cards)}))
+  } 
+  
   return (
     <Container maxWidth="xl" style={{padding: '0px'}}>  
       <GlobalStyle />
-      <Header />
+      <Header isLoggedIn={!!userName} dispatch={dispatch}/>
       <Switch>
         <ErrorBoundary>
           <Suspense fallback={<Spinner />}>
             <Route exact path='/' component={() => <HomePage />} />
+            <Route exact path='/login' component={() => <LoginPage />} />
             <Route exact path='/edit' component={() => <EditPage />} />
             <Route exact path='/create' component={() => <CreatePage />} />
             <Route exact path='/test' component={() => <TestPage />} />
             <Route exact path='/testSetup' component={() => <TestSetupPage />} />
+            {!userName && (<Redirect to="/login" />)}
           </Suspense>
         </ErrorBoundary>
       </Switch>
-      <EditModal dispatch={dispatch} tags={state.tags} editCardMode={editCardMode} editCardIndex={editCardIndex}/>
+      {userName && (<EditModal dispatch={dispatch} tags={state.tags} userName={userName} editCardMode={editCardMode} editCardIndex={editCardIndex}/>)}
     </Container>
   );
 };

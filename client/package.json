@@ -19,6 +19,8 @@
     "ramda": "^0.27.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-facebook-login": "^4.1.1",
+    "react-google-login": "^5.1.10",
     "react-hook-form": "^4.9.6",
     "react-query": "^1.2.7",
     "react-query-devtools": "^1.1.3",
