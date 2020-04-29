@@ -31,18 +31,18 @@ const getCards = async (userName) => {
 
 const refetchUser = () => queryCache.refetchQueries("user");
 
-const prefetchUser = async (userName, tags, cb) => {
+const prefetchUser = async (userName) => {
   console.log(userName);
   const queryData = await queryCache.prefetchQuery('user', () =>
     getUser(userName)).then(result => {
       console.log(result);
       if(result === null){
         postUser(userName);
-      }
-      if(result && result.cards && result.cards.length && !tags.length){
-        cb(result.cards);
+      } else {
+        return result;
       }
     })
+    return queryData;
 }
 
 export {getUser, getCards, refetchUser, prefetchUser, useQuery};

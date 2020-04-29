@@ -7,12 +7,15 @@ import {
   Typography,
   Button,
   IconButton,
+  Menu,
+  MenuItem
 } from '@material-ui/core';
 import './header.component.scss';
 
 import MenuIcon from '@material-ui/icons/Menu';
 
 export const Header = ({isLoggedIn = false, dispatch}) => {
+  const [openMenu, setOpenMenu] = useState(false)
 
   const signOut = () => {
     sessionStorage.clear();
@@ -21,12 +24,28 @@ export const Header = ({isLoggedIn = false, dispatch}) => {
   }
 
   const signIn = () => <Redirect to="/login"/>
+  const handleClose = () => setOpenMenu(false);
   
   return (<AppBar className="header" position="static">
     <Toolbar>
-      <IconButton edge="start" color="inherit" aria-label="menu">
-        <MenuIcon />
-      </IconButton>
+      <div>
+        <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setOpenMenu(true)}>
+          <MenuIcon />
+        </IconButton>
+        <Menu
+          id="simple-menu"
+          className="header__popover"
+          keepMounted
+          open={openMenu}
+          onClose={() => setOpenMenu(false)}
+        >
+          <Link to=""><MenuItem onClick={handleClose}>Home</MenuItem></Link>
+          <Link to="/create"><MenuItem onClick={handleClose}>Create Card</MenuItem></Link>
+          <Link to="/testSetup"><MenuItem onClick={handleClose}>Create Test</MenuItem></Link>
+          <Link to="/edit"><MenuItem onClick={handleClose}>Edit Cards</MenuItem></Link>
+          <Link to="/test"><MenuItem onClick={handleClose}>Test</MenuItem></Link>
+        </Menu>
+      </div>
       <Typography variant="h6" className="header__title"><Link to="/">Time to learn</Link></Typography>
       <Button color="inherit" onClick={isLoggedIn ? signOut : signIn} className="header__login">{ isLoggedIn ? 'sign out' : 'login' }</Button>
     </Toolbar>

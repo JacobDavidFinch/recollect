@@ -19,6 +19,8 @@ const useStyles = makeStyles({
   const divStyle={display: 'flex', flexDirection: 'row'}
 
 const RecentListDisplay = ({status, list}) => {
+    console.log(status);
+    console.log(list);
     const getTest = (item) => {
         console.log(item);
     }
@@ -45,7 +47,6 @@ const RecentListDisplay = ({status, list}) => {
        }[status];
        return display ? display : (<div>loading</div>)
     }
-
     return displayByStatus({status, fn: isList, fnArg: list})
 }
 
@@ -66,6 +67,7 @@ export const HomePage = () => {
     const {state, dispatch} = useGlobalState();
     const { tags, userName, editCardMode, editCardIndex } = state;
     const { status, data: user = {}, error, isFetching } = useQuery("user", () => getUser(userName), {staleTime: 120000});
+    console.log(user);
     const {tests = []} = user;
     const classes = useStyles();
 

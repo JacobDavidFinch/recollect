@@ -37,10 +37,8 @@ const EditPage = () => {
     const {state, dispatch} = useGlobalState();
     const classes = useStyles();
     const { tags, editCardMode, editCardIndex, userName } = state;
-    const { status, data = {}, error, isFetching } = useQuery("cards", () => getCards(userName), {staleTime: 120000});
+    const { status, data: cards = [], error, isFetching } = useQuery("cards", () => getCards(userName), {staleTime: 120000});
     console.log(status);
-    console.log(data);
-    const cards = data || [];
     // have search input 
     // cards description with edit and scroll
 
@@ -59,7 +57,7 @@ const EditPage = () => {
                 {cards.length ? cards.map((card, i) => {
                     return (
                     <Card item xs={12} md={6} lg={4} xl={3} className={classes.root} key={cuid()} data-index={i} variant="outlined">
-                        <CardContent key={i} i={i} card={card} dispatch={dispatch}/>
+                        <CardContent key={i} i={i} card={card} dispatchFn={() => dispatch({type: "edit", payload: i})}/>
                     </Card>
                 )
                 }) : "No Cards Found"}
@@ -68,9 +66,9 @@ const EditPage = () => {
     )   
   };
 
-  const CardContent = ({card = {}, i, dispatch}) => Object.keys(card).map(keyName => (
+  const CardContent = ({card = {}, dispatchFn}) => Object.keys(card).map(keyName => (
         <>
-          <Button variant="contained" style={{position: 'absolute', top: '5px', right: '15px'}} onClick={() => dispatch({type: "edit", payload: i})} >Edit</Button>
+          <Button variant="contained" style={{position: 'absolute', top: '5px', right: '15px'}} onClick={dispatchFn}>Edit</Button>
           <h4>{keyName}</h4>
           <p>{card[keyName]}</p>
         </>

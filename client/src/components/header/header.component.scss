@@ -17,4 +17,8 @@
         text-decoration: none;
         color: white;
     }
+
+    &__popover > div:nth-child(3){
+        top: 45px !important;
+    }
 }

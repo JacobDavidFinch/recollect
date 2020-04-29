@@ -5,7 +5,7 @@ const initialGlobalObj = {
   okay: true,
   editCardIndex: undefined,
   editCardMode: false,
-  userName: '',
+  userName: 'jd0523@gmail.com',
   test: '',
   tags: []
 }

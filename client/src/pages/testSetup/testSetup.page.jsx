@@ -1,13 +1,17 @@
 import React, {useState, useEffect, memo} from 'react';
 import { Paper, Grid, Fab, Button} from '@material-ui/core';
 import {Add, Remove} from '@material-ui/icons';
+import { useGlobalState } from '../../Context/globalContext';
 import {postTest} from '../../utils/API'
 import { Dropdown } from '../../components';
 import {equals} from 'ramda';
 import './testSetup.css';
 
-const SelectTests = ({tags = [], userName, tests = [], status}) => {
+const SelectTests = () => {
+  const {state = {}} = useGlobalState();
+  const {tags, userName} = state;
   console.log(tags);
+  
   const [value, setValue] = useState('')
   const [postStatus, setPostStatus] = useState('idle')
   const [list, setList] = useState([]);
@@ -15,20 +19,22 @@ const SelectTests = ({tags = [], userName, tests = [], status}) => {
   useEffect(() => {
     if(postStatus === 'rejected' || postStatus === 'resolved')setTimeout(() => {
         setPostStatus('idle')
-    }, 3000);
+        setValue('')
+        setList([])
+    }, 1500);
   }, [postStatus])
 
-  const BtnDisplay = ({postStatus, list, tests}) => {
+  const BtnDisplay = ({postStatus, list, tags}) => {
     const btn = (text, styleObj, props) => <Button {...props} color="primary" style={{marginTop: '15px', ...styleObj}} variant="contained" onClick={() => createTest(userName, list)}>{text}</Button>
-    const testExists = (list, tests) => tests.reduce((acc, test) => acc ? acc : equals(test, list), false) 
-    if(testExists(list, tests)){
+    const testExists = (list, tags) => tags.reduce((acc, test) => acc ? acc : equals(test, list), false) 
+    if(testExists(list, tags)){
       return btn('Test Exists', {}, {disabled: true})
     }
     return ({
     idle: btn("Create Test"),
     pending:btn("Creating Test..."),
-    rejected: btn("Test Created!", {backgroundColor: 'green'}),
-    resolved: btn("Failed Creating Test", {backgroundColor: 'red'})
+    resolved: btn("Test Created!", {backgroundColor: 'green'}),
+    rejected: btn("Failed Creating Test", {backgroundColor: 'red'})
   }[postStatus])
 }
 
@@ -73,7 +79,7 @@ const SelectTests = ({tags = [], userName, tests = [], status}) => {
             {
               list && list.length ? list.map(item => <li key={item}>{item}</li>) : <li>No Tags Selected</li>
             }
-            <BtnDisplay postStatus={postStatus} list={list} tests={tests} />
+            <BtnDisplay postStatus={postStatus} list={list} tags={tags} />
         
       </Grid>
     </Paper>

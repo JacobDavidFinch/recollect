@@ -1,11 +1,11 @@
 import React, { useEffect, lazy, Suspense } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useGlobalState } from './Context/globalContext';
-import {getUser, useQuery, prefetchUser} from './utils/reactQuery'
+import {getUser, useQuery} from './utils/reactQuery'
 import {Header} from './components/header/header.component.jsx';
 import {EditModal} from './components/modal/modal.edit'
 import {Spinner} from './components/spinner/spinner.component.jsx';
-import {tags} from './utils/helperFns'
+import {createTags} from './utils/helperFns'
 import ErrorBoundary from './components/error-boundary/error-boundary.component';
 
 import { GlobalStyle } from './global.styles';
@@ -21,15 +21,14 @@ const TestSetupPage = lazy(() => import('./pages/testSetup/testSetup.page.jsx'))
 const App = () => {
 
   const {state, dispatch} = useGlobalState();
-  const { editCardMode, editCardIndex, userName } = state;
-  console.log([state, dispatch])
-  console.log(state.tags)
+  const { editCardMode, editCardIndex, userName, tags } = state;
+  const { status, data: user = {}, error, isFetching } = useQuery("user", () => getUser(userName), {staleTime: 120000});
 
-  if(userName){
-    console.log(userName);
-    prefetchUser(userName, state.tags, (cards) =>  dispatch({type: "tags", payload: tags(cards)}))
-  } 
-  
+  const shouldCreateTagsFromUser = user && user.cards && !tags.length;
+  if(shouldCreateTagsFromUser){
+    dispatch({type: "tags", payload: createTags(user.cards)});
+  }
+
   return (
     <Container maxWidth="xl" style={{padding: '0px'}}>  
       <GlobalStyle />

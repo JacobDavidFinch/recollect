@@ -1,4 +1,4 @@
-import React, {useState, memo} from 'react';
+import React, {useState,useEffect, memo} from 'react';
 import {Container, Paper, Grid, TextField, Button, Checkbox } from '@material-ui/core';
 import {getUser, useQuery} from '../../utils/reactQuery'
 import { useGlobalState } from '../../Context/globalContext'
@@ -47,7 +47,7 @@ const AddInputs = ({name, label, register, xs = 12, sm = 6, xl = 4, lg = 6, ...p
         setValue('');
     }
 
-    const inputMap = () => inputIterator.map((input, i) => (  <InputComponent register={register} name={input} key={input + i} label={input} xs={12} lg={6} />));
+    const inputMap = () => inputIterator.map((input, i) => (  <InputComponent rows="2" register={register} name={input} key={input + i} label={input} xs={12} lg={6} />));
 
     return (
         <>
@@ -105,23 +105,30 @@ const CreatePage = () => {
     
     const {state, dispatch} = useGlobalState();
     const { editCardMode, editCardIndex, tags, userName } = state;
+    console.log(editCardMode, editCardIndex);
+
     
     const { status, data = {}, error, isFetching } = useQuery("user", () => getUser(userName), {staleTime: 120000});
     
     const [apiStatus, setApiStatus] = useState('idle');
     const [tagsValue, setTagsValue] = useState([])
     const classes = useStyles();
+    
+    useEffect(() => {
+        console.log('this');
+        reset();
+    }, [apiStatus])
 
     const card = data.cards ? data.cards[editCardIndex] : undefined;
     const apiCall = async ({api, args}) => await api(...args) === "error" ? setApiStatus('rejected') : setApiStatus('resolved');
 
-    const { handleSubmit, control, register, errors } = useForm();
+    const { handleSubmit, control, register, errors, reset } = useForm({ defaultValues: card ? card : {}});
 
     const onSubmit = async values => {
         const submitVals = {...values, Tags: tagsValue}
         console.log(submitVals)
         setApiStatus('pending');
-        // return await apiCall( card ? {api: putCard , args: [userName, submitVals, state.editCardIndex]} : {api: postCard, args: [userName, submitVals]} );
+        return await apiCall( card ? {api: putCard , args: [userName, submitVals, state.editCardIndex]} : {api: postCard, args: [userName, submitVals]} );
     }
 
     return (
@@ -136,7 +143,7 @@ const CreatePage = () => {
                         <AddInputs register={register}/>
                     </Grid>
                     <Grid container spacing={3} direction="row" justify="flex-end" className={classes.container}>
-                        <Button variant="contained" color="primary" type="submit">Submit</Button>
+                        <FormButton variant="contained" color="primary" type="submit" apiStatus={apiStatus}>Submit</FormButton>
                     </Grid>
                 </form>
         </Paper>
@@ -144,3 +151,20 @@ const CreatePage = () => {
 }
   
   export default memo(CreatePage);
+
+const FormButton = (props) => {
+    const {apiStatus} = props;
+    const btnContent = {
+        idle: "Submit",
+        pending: "Submiting",
+        resolved: "Success",
+        rejected: "Error",
+    }[apiStatus]
+
+    return (
+        <Button {...props}>
+            {btnContent}
+        </Button>
+    )
+
+}
