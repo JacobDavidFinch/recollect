@@ -18,7 +18,7 @@ const useStyles = makeStyles({
 
   const divStyle={display: 'flex', flexDirection: 'row'}
 
-const RecentListDisplay = ({status, list}) => {
+const RecentListDisplay = ({status, list, globalDispatch}) => {
     console.log(status);
     console.log(list);
     const getTest = (item) => {
@@ -31,7 +31,7 @@ const RecentListDisplay = ({status, list}) => {
                 {list.map((item, i) => {
                     const textDisplay = typeof item !== "string" ? item.join(" | ") : item;
                     return <Link key={item} className="tests__test-btn" to={`/test/?test=${i}`} onClick={() => getTest(item)}>
-                                <Button variant="contained" color="primary">{textDisplay}</Button>
+                                <Button onClick={() => globalDispatch({type: "test", payload: list})} variant="contained" color="primary">{textDisplay}</Button>
                             </Link>
                 })}
             </div>)
@@ -50,14 +50,14 @@ const RecentListDisplay = ({status, list}) => {
     return displayByStatus({status, fn: isList, fnArg: list})
 }
 
-const LastTestDisplay = ({test}) => {
+const LastTestDisplay = ({test, globalDispatch}) => {
     console.log(test);
     if(!test) return (<div>Couldn't find a previous test</div>)
     return (
         <div>Last Test Was: 
             <div>
                 <Link to='/test'>
-                    <Button variant="contained" color="primary">{test.join(' | ')}</Button>
+                    <Button variant="contained" onClick={() => globalDispatch({type: "test", payload: test})} color="primary">{test.join(' | ')}</Button>
                 </Link>
             </div>
         </div>)
@@ -77,7 +77,7 @@ export const HomePage = () => {
                 <Grid item sm={6} xs={12} >
                     <Card className={classes.card}>
                         <h2>Pick Up Where You Left Off</h2>
-                        <LastTestDisplay status='resolved' test={tests[tests.length - 1]} />
+                        <LastTestDisplay status='resolved' globalDispatch={dispatch} test={tests[tests.length - 1]} />
                     </Card>
                 </Grid>
                 <Grid item sm={6} xs={12}>
@@ -105,7 +105,7 @@ export const HomePage = () => {
                     <Card className={classes.card}>
                         <h2>All your recent tests</h2>
                         <div>Recent tests:</div>
-                        <RecentListDisplay status='resolved' list={tests} />
+                        <RecentListDisplay status='resolved' globalDispatch={dispatch} list={tests} />
                     </Card>
                 </Grid>
             </Grid>

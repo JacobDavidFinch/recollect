@@ -22,7 +22,7 @@ const App = () => {
 
   const {state, dispatch} = useGlobalState();
   const { editCardMode, editCardIndex, userName, tags } = state;
-  const { status, data: user = {}, error, isFetching } = useQuery("user", () => getUser(userName), {staleTime: 120000});
+  const { status, data: user = {}, error, isFetching } = useQuery("user", () => getUser(userName), {staleTime: Infinity});
 
   const shouldCreateTagsFromUser = user && user.cards && !tags.length;
   if(shouldCreateTagsFromUser){

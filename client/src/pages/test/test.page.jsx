@@ -5,43 +5,47 @@ import {Container, Paper, TextField, Card, Button} from '@material-ui/core';
 import {putCardStats} from '../../utils/API'
 import * as R from 'ramda';
 
-const includedInTag = test => tags => {
+export const includedInTag = test => (tags = []) => {
+    // if any of the tests are in the card tags, it won't return the same length
     return R.difference(test, tags).length !== test.length;
 }
-const getTestCards = (cards = [], fn) => cards.reduce((acc, curr) => fn(curr.tags) ? {...acc, ...curr} : {...acc}, {})
+export const getTestCards = (cards = [], fn) => cards.reduce((acc, curr) => fn(curr.tags ? curr.tags : curr.Tags) ? [...acc, curr] : acc, [])
 
 const TestPage = ({}) => {
     const [count, setCount] = useState(0);
-    
     const {state, dispatch} = useGlobalState();
     console.log([state, dispatch])
-    const {test, userName} = state;
+    const {test = [], userName} = state;
     
-    console.log(userName);
     const { status, data: cards = [], error, isFetching } = useQuery("cards", () => getCards(userName), {staleTime: 120000});
-    console.log([cards, userName]);
 
-    const testNameIncludedInTag = includedInTag(test);
-    const cardList = useMemo(() => getTestCards(cards, testNameIncludedInTag), [cards]);
+    const isCardIncludedInTest = includedInTag(test);
+    const cardList = useMemo(() => getTestCards(cards, isCardIncludedInTest), [cards]);
+    
+    if(!test || !test.length){
+        return <div>No Test Selected</div>
+    } else if (isFetching){
+        return <div>Loading ...</div>
+    }
+
+    console.log([cards, test, cardList]);
+
     // cardGuess
     // compareCards
     // comments, send whether correct, diff check, pull next card  
     
     return (
-        !cards ? (<div>Loading...</div>)
-         : (
         <div>
             <CardGuess card={cardList[count]} count={count} setCount={setCount} />
             <div>
                 <Button disable={count === cardList.length - 1} onClick={() => setCount(count + 1)}>Next</Button>
-                <Button disable={count === 0} onClick={() => setCount(count - 1)}>Previus</Button>
+                <Button disable={count === 0} onClick={() => setCount(count - 1)}>Previous</Button>
             </div>
         </div>
         )
-    )
 }
 
-const CardGuess = ({card, count, setCount}) => {
+const CardGuess = ({card = {}, count, setCount}) => {
     const [testStatus, setTestStatus] = useState("guess");
 
     useEffect(() => {
@@ -72,26 +76,29 @@ const CardGuess = ({card, count, setCount}) => {
         }
     }
 
-    const cardInitialObjReducer = (acc, keyName) => ({
-        ...acc,
-         keyName: !cardListExtract.includes(keyName) ? 
-         {
-             ...acc,
-            inputs: {
-                ...acc.inputs, 
-                ...objFactory(card[keyName])
+    const cardInitialObjReducer = (acc, keyName) => {
+        const dontInclude = ["Tags", "tags"]
+        if(dontInclude.includes(keyName))return acc; 
+        return ({
+            ...acc,
+            ...!cardListAttributes.includes(keyName) ? 
+            {inputs: {
+                    ...acc.inputs, 
+                    ...objFactory(card[keyName])
+            }}
+            :
+             {
+                attributes: {
+                    ...acc.attributes, 
+                    [keyName]: card[keyName] 
+                }
             }
-        } : {
-            attributes: {
-                ...acc.attributes, 
-                [keyName]: card[keyName] 
-            }
-        }
-    }, {})
+        })
+    }
 
-    const cardListExtract = ['name', 'hints ', 'attempted', 'correct', 'lastAttempted', 'comments'];
+    const cardListAttributes = ['name', 'hints ', 'attempted', 'correct', 'lastAttempted', 'comments'];
     
-    const cardInputObj = Object.keys(card).reduce(cardInitialObjReducer);
+    const cardInputObj = Object.keys(card).reduce(cardInitialObjReducer, {});
     const [cardObj, dispatchCardObj] = useReducer(cardInputReducer, cardInputObj);
 
     return (
