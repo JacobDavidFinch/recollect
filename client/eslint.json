@@ -24,6 +24,10 @@
     },
     "rules": {
         "prettier/prettier": "warn",
+            "semi": true,
+            "trailingComma": "all",
+            "singleQuote": true,
+            "printWidth": 70,
         "indent": [
             "warn",
             2

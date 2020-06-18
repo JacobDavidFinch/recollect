@@ -22,12 +22,15 @@ const App = () => {
 
   const {state, dispatch} = useGlobalState();
   const { editCardMode, editCardIndex, userName, tags } = state;
-  const { status, data: user = {}, error, isFetching } = useQuery("user", () => getUser(userName), {staleTime: Infinity});
+  const { status, data: user = {} } = useQuery("user", () => getUser(userName), {staleTime: Infinity});
 
-  const shouldCreateTagsFromUser = user && user.cards && !tags.length;
-  if(shouldCreateTagsFromUser){
-    dispatch({type: "tags", payload: createTags(user.cards)});
-  }
+  console.log(status);
+  useEffect(() => {
+    const shouldCreateTagsFromUser = status === "success" && user.cards && tags === undefined;
+    if(shouldCreateTagsFromUser){
+      dispatch({type: "tags", payload: createTags(user.cards)});
+    }
+  }, [status])
 
   return (
     <Container maxWidth="xl" style={{padding: '0px'}}>  
@@ -38,10 +41,10 @@ const App = () => {
           <Suspense fallback={<Spinner />}>
             <Route exact path='/' component={() => <HomePage />} />
             <Route exact path='/login' component={() => <LoginPage />} />
-            <Route exact path='/edit' component={() => <EditPage />} />
-            <Route exact path='/create' component={() => <CreatePage />} />
+            <Route exact path='/edit-cards' component={() => <EditPage />} />
+            <Route exact path='/create-card' component={() => <CreatePage />} />
             <Route exact path='/test' component={() => <TestPage />} />
-            <Route exact path='/testSetup' component={() => <TestSetupPage />} />
+            <Route exact path='/create-test' component={() => <TestSetupPage />} />
             {!userName && (<Redirect to="/login" />)}
           </Suspense>
         </ErrorBoundary>

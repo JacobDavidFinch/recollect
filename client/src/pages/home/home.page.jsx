@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import {getUser, useQuery} from '../../utils/reactQuery'
+import cuid from 'cuid';
 import { useGlobalState } from '../../Context/globalContext';
 import {EditModal} from '../../components/modal/modal.edit'
-import {Container, Paper, Grid, Card, Button} from '@material-ui/core'
+import {Container, Paper, Grid, Card, Button, InputLabel, Select, MenuItem} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import './home.page.scss';
 
@@ -63,6 +64,31 @@ const LastTestDisplay = ({test, globalDispatch}) => {
         </div>)
 }
 
+const SelectTest = ({tests, globalDispatch}) => {
+    const [value, setValue] = useState('');
+
+    const handleDropdown = (test) => {
+        setValue(test);
+        return globalDispatch({type: "test", payload: test})
+    }
+
+    return (
+        <>
+            <InputLabel id="demo-simple-select-label">Select Test</InputLabel>
+            <Select
+            onChange={handleDropdown}
+            >
+                {tests.map((test, i) => (
+                <MenuItem key={cuid()} value={value}>
+                    <Link key={test} className="tests__test-btn" to={`/test/?test=${i}`} >
+                        {tests.join(' | ')}
+                    </Link>
+                </MenuItem>))}
+            </Select>
+        </>
+    )
+}
+
 export const HomePage = () => {
     const {state, dispatch} = useGlobalState();
     const { tags, userName, editCardMode, editCardIndex } = state;
@@ -70,6 +96,7 @@ export const HomePage = () => {
     console.log(user);
     const {tests = []} = user;
     const classes = useStyles();
+
 
     return (
         <Paper>
@@ -83,7 +110,7 @@ export const HomePage = () => {
                 <Grid item sm={6} xs={12}>
                     <Card className={classes.card}>
                         <h2>Create New Test</h2>
-                        <Link to='/testSetup'><Add/></Link>
+                        <Link to='/create-test'><Add/></Link>
                     </Card>
                 </Grid>
                 <Grid item sm={6} xs={12} >
@@ -91,17 +118,23 @@ export const HomePage = () => {
                         <h2>
                             Create New Cards
                         </h2>
-                        <Link to='/create'><Add/></Link>
+                        <Link to='/create-card'><Add/></Link>
 
                     </Card>
                 </Grid>
                 <Grid item sm={6} xs={12}>
                     <Card className={classes.card}>
                         <h2>Edit Existing Cards</h2>
-                        <Link to="/edit"><Edit/></Link>
+                        <Link to="/edit-cards"><Edit/></Link>
                     </Card>
                 </Grid>
-                <Grid item xs={12} >
+                <Grid item sm={6} xs={12} >
+                    <Card className={classes.card}>
+                        <h2>Start Test</h2>
+                        <SelectTest tests={tests} globalDispatch={dispatch} />
+                    </Card>
+                </Grid>
+                <Grid item sm={6} xs={12} >
                     <Card className={classes.card}>
                         <h2>All your recent tests</h2>
                         <div>Recent tests:</div>

@@ -6,8 +6,8 @@ const initialGlobalObj = {
   editCardIndex: undefined,
   editCardMode: false,
   userName: 'jd0523@gmail.com',
-  test: [],
-  tags: []
+  test: undefined,
+  tags: undefined
 }
 
 function globalReducer(state, action) {

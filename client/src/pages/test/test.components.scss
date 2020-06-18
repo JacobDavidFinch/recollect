@@ -1,0 +1,17 @@
+.test-container {
+    padding: 1.5rem;
+    margin: 1rem;
+    .guess-form {
+        width: 100%;
+    
+        div {
+            margin-top: 1rem;
+            width: 90%;
+            // margin-left: 5%;
+        }
+        label {
+            margin-top: 1rem;
+            // margin-left: 5%;
+        }
+    }
+}

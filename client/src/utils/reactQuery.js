@@ -25,10 +25,6 @@ const getCards = async (userName) => {
     return data;
 };
 
-  // if(cards.length && !state.tags.length){
-  //   dispatch({type: "tags", payload: tags(cards)});
-  // }
-
 const refetchUser = () => queryCache.refetchQueries("user");
 
 const prefetchUser = async (userName) => {

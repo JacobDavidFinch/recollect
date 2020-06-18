@@ -48,9 +48,6 @@ const SelectTests = () => {
     if(acc)return true;
     return curr === tag;
   }, false) 
-  console.log(value);
-  console.log(isTagInList(tags, value));
-  console.log(list);
 
   const createTest = async(userName, list) => {
     setPostStatus('pending');
@@ -85,19 +82,5 @@ const SelectTests = () => {
     </Paper>
   );
 };
-
-// const mapStateToProps = createStructuredSelector({
-//   tags: selectTags,
-//   user: selectCurrentUser
-// });
-
-// const mapDispatchToProps = dispatch => ({
-//   createTest: (userName, tags) => dispatch(createTest(userName, tags))
-// });
-
-// const SelectContainer = connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(SelectTests);
 
 export default memo(SelectTests);

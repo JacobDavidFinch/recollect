@@ -40,9 +40,9 @@ export const Header = ({isLoggedIn = false, dispatch}) => {
           onClose={() => setOpenMenu(false)}
         >
           <Link to=""><MenuItem onClick={handleClose}>Home</MenuItem></Link>
-          <Link to="/create"><MenuItem onClick={handleClose}>Create Card</MenuItem></Link>
-          <Link to="/testSetup"><MenuItem onClick={handleClose}>Create Test</MenuItem></Link>
-          <Link to="/edit"><MenuItem onClick={handleClose}>Edit Cards</MenuItem></Link>
+          <Link to="/create-card"><MenuItem onClick={handleClose}>Create Card</MenuItem></Link>
+          <Link to="/create-test"><MenuItem onClick={handleClose}>Create Test</MenuItem></Link>
+          <Link to="/edit-cards"><MenuItem onClick={handleClose}>Edit Cards</MenuItem></Link>
           <Link to="/test"><MenuItem onClick={handleClose}>Test</MenuItem></Link>
         </Menu>
       </div>
